@@ -15,6 +15,13 @@ class TodoList extends StatelessWidget {
         final Map<String, String> todo = todos[index];
 
         return Dismissible(
+          confirmDismiss: (DismissDirection direction) {
+            if (DismissDirection.startToEnd == direction) {
+              return deleteTodo(todo['id']);
+            } else if (DismissDirection.endToStart == direction) {
+              return updateTodo(todo['id']);
+            }
+          },
           key: Key(todo['id']),
           background: Container(
             alignment: AlignmentDirectional.centerStart,
@@ -38,13 +45,13 @@ class TodoList extends StatelessWidget {
             ),
             color: Colors.green,
           ),
-          onDismissed: (DismissDirection direction) {
-            if (DismissDirection.startToEnd == direction) {
-              deleteTodo(todo['id']);
-            } else if (DismissDirection.endToStart == direction) {
-              updateTodo(todo['id']);
-            }
-          },
+          // onDismissed: (DismissDirection direction) {
+          //   if (DismissDirection.startToEnd == direction) {
+          //     deleteTodo(todo['id']);
+          //   } else if (DismissDirection.endToStart == direction) {
+          //     updateTodo(todo['id']);
+          //   }
+          // },
           child: ListTile(
             title: Text(todo['title']),
           ),

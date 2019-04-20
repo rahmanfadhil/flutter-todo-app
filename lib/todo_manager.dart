@@ -56,30 +56,55 @@ class _TodoManagerState extends State<TodoManager> {
     _newTodoFocusNode.unfocus();
   }
 
-  void _deleteTodo(String id) {
-    setState(() {
-      _todos.removeWhere((item) => item['id'] == id);
+  Future<bool> _deleteTodo(String id) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Are you sure you want to delete this item?'),
+          content: Text('This action cannot be undone!'),
+          actions: <Widget>[
+            FlatButton(
+              textColor: Colors.red,
+              child: Text('Discard'),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            FlatButton(
+              child: Text('Continue'),
+              onPressed: () => Navigator.pop(context, true),
+            )
+          ],
+        );
+      },
+    ).then((value) {
+      if (value) {
+        setState(() {
+          _todos.removeWhere((item) => item['id'] == id);
+        });
+        return true;
+      }
+      return false;
     });
   }
 
-  void _updateTodo(String id) {
+  Future<bool> _updateTodo(String id) {
     final Map<String, String> todo =
         _todos.firstWhere((item) => item['id'] == id);
 
-    showModalBottomSheet<String>(
+    return showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) {
         return TodoEdit(todo['title']);
       },
-    ).then((value) {
-      final int todoIndex = _todos.indexWhere((item) => item['id'] == id);
-
-      setState(() {
-        _todos[todoIndex] = {
-          'id': Uuid().v4(),
-          'title': value != null ? value : todo['title']
-        };
-      });
+    ).then<bool>((value) {
+      if (value != null) {
+        final Map<String, String> todo =
+            _todos.firstWhere((item) => item['id'] == id);
+        setState(() {
+          todo.update('title', (_) => value);
+        });
+      }
+      return false;
     });
   }
 

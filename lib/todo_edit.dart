@@ -30,7 +30,8 @@ class _TodoEditState extends State<TodoEdit> {
             controller: _todoController,
             decoration: InputDecoration(labelText: 'Update todo'),
           ),
-          SizedBox(
+          Container(
+            margin: EdgeInsets.only(top: 15.0),
             width: double.infinity,
             child: RaisedButton(
               child: Text('Update todo'),
